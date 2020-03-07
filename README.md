@@ -65,7 +65,7 @@ Returns - documents that include the word 'brown' along with the documents TF-ID
 ```
 
 
-## Spec -
+## Spec
 * Accepts JSON
 * Response in JSON
 * JDK8 or higher
@@ -73,6 +73,6 @@ Returns - documents that include the word 'brown' along with the documents TF-ID
 * Data storage: (in memory) database
 * Lombok has been used to reduce boilerplate code
 
-## Running -
+## Running
 * Run as a Spring Boot App
 
