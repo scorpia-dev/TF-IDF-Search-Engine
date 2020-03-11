@@ -55,8 +55,13 @@ public class DocumentControllerTest {
 
 	List<Document> documents = new ArrayList<Document>();
 	
-	@BeforeEach
-	public void setUp() throws Exception {
+/*	@BeforeEach
+	public void setUp() throws Exception {*/
+	//}
+
+
+
+	private void setUpMultiDocuments() {
 		String text1 = "The brown fox jumped over the brown dog";
 		String text2 = "The lazy brown dog, sat in the other corner";
 		String text3 = "The Red Fox bit the lazy dog!";
@@ -112,6 +117,7 @@ public class DocumentControllerTest {
 	@Transactional
 	@Test
 	public void createMultiDocumentTest() throws Exception {
+		setUpMultiDocuments();
 
 		String json = objectMapper.writeValueAsString(documents);
 
@@ -132,6 +138,7 @@ public class DocumentControllerTest {
 	@Transactional
 	@Test
 	public void listMatchingDocumentsTest() throws Exception {
+		setUpMultiDocuments();
 
 		documentService.createDocument(documents);
 
@@ -157,6 +164,7 @@ public class DocumentControllerTest {
 	@Transactional
 	@Test
 	public void listMatchingDocumentsNegativeTest() throws Exception {
+		setUpMultiDocuments();
 
 		documentService.createDocument(documents);
 
