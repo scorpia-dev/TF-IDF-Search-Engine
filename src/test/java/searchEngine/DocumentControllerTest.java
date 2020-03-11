@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,25 @@ public class DocumentControllerTest {
 	@Autowired
 	ObjectMapper objectMapper;
 
+	List<Document> documents = new ArrayList<Document>();
+	
+	@BeforeEach
+	public void setUp() throws Exception {
+		String text1 = "The brown fox jumped over the brown dog";
+		String text2 = "The lazy brown dog, sat in the other corner";
+		String text3 = "The Red Fox bit the lazy dog!";
+
+		Document document1 = new Document(text1);
+		Document document2 = new Document(text2);
+		Document document3 = new Document(text3);
+
+		documents.add(document1);
+		documents.add(document2);
+		documents.add(document3);
+	}
+
+	
+	
 	@Transactional
 	@Test
 	public void createSingleDocumentTest() throws Exception {
@@ -71,13 +91,11 @@ public class DocumentControllerTest {
 				.andReturn();
 
 		assertTrue(documentrepository.findAll().size() == 1);
-
 	}
 
 	@Transactional
 	@Test
 	public void createSingleDocumentEmptyTextTest() throws Exception {
-		List<Document> documents = new ArrayList<Document>();
 		String text = "";
 
 		Document document = new Document(text);
@@ -94,18 +112,6 @@ public class DocumentControllerTest {
 	@Transactional
 	@Test
 	public void createMultiDocumentTest() throws Exception {
-		List<Document> documents = new ArrayList<Document>();
-		String text1 = "The brown fox jumped over the brown dog";
-		String text2 = "The lazy brown dog, sat in the other corner";
-		String text3 = "The Red Fox bit the lazy dog!";
-
-		Document document1 = new Document(text1);
-		Document document2 = new Document(text2);
-		Document document3 = new Document(text3);
-
-		documents.add(document1);
-		documents.add(document2);
-		documents.add(document3);
 
 		String json = objectMapper.writeValueAsString(documents);
 
@@ -126,18 +132,7 @@ public class DocumentControllerTest {
 	@Transactional
 	@Test
 	public void listMatchingDocumentsTest() throws Exception {
-		List<Document> documents = new ArrayList<Document>();
-		String text1 = "The brown fox jumped over the brown dog";
-		String text2 = "The lazy brown dog, sat in the other corner";
-		String text3 = "The Red Fox bit the lazy dog!";
 
-		Document document1 = new Document(text1);
-		Document document2 = new Document(text2);
-		Document document3 = new Document(text3);
-
-		documents.add(document1);
-		documents.add(document2);
-		documents.add(document3);
 		documentService.createDocument(documents);
 
 		String searchTerm1 = "dog";
@@ -162,18 +157,6 @@ public class DocumentControllerTest {
 	@Transactional
 	@Test
 	public void listMatchingDocumentsNegativeTest() throws Exception {
-		List<Document> documents = new ArrayList<Document>();
-		String text1 = "The brown fox jumped over the brown dog";
-		String text2 = "The lazy brown dog, sat in the other corner";
-		String text3 = "The Red Fox bit the lazy dog!";
-
-		Document document1 = new Document(text1);
-		Document document2 = new Document(text2);
-		Document document3 = new Document(text3);
-
-		documents.add(document1);
-		documents.add(document2);
-		documents.add(document3);
 
 		documentService.createDocument(documents);
 
