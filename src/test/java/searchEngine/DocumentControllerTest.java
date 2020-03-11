@@ -13,7 +13,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,12 +53,6 @@ public class DocumentControllerTest {
 	ObjectMapper objectMapper;
 
 	List<Document> documents = new ArrayList<Document>();
-	
-/*	@BeforeEach
-	public void setUp() throws Exception {*/
-	//}
-
-
 
 	private void setUpMultiDocuments() {
 		String text1 = "The brown fox jumped over the brown dog";
@@ -75,8 +68,6 @@ public class DocumentControllerTest {
 		documents.add(document3);
 	}
 
-	
-	
 	@Transactional
 	@Test
 	public void createSingleDocumentTest() throws Exception {
