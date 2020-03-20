@@ -136,19 +136,19 @@ public class DocumentControllerTest {
 		String searchTerm1 = "dog";
 		mvc.perform(get("/documents/{word}", searchTerm1).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andDo(print())
-				.andExpect(content().string("{\"document 1\":0.0,\"document 2\":0.0,\"document 3\":0.0}"));
+			.andExpect(content().string("{\"document 3\":0.09902103,\"document 1\":0.0866434,\"document 2\":0.07701635}"));
 		assertTrue(documentService.getMatchingDocuments(searchTerm1).size() == 3);
 
 		String searchTerm2 = "fox";
 		mvc.perform(get("/documents/{word}", searchTerm2).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andDo(print())
-				.andExpect(content().string("{\"document 3\":0.05792359,\"document 1\":0.050683137}"));
+				.andExpect(content().string("{\"document 3\":0.13089868,\"document 1\":0.114536345}"));
 		assertTrue(documentService.getMatchingDocuments(searchTerm2).size() == 2);
 
 		String searchTerm3 = "brown";
 		mvc.perform(get("/documents/{word}", searchTerm3).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andDo(print())
-				.andExpect(content().string("{\"document 1\":0.101366274,\"document 2\":0.04505168}"));
+				.andExpect(content().string("{\"document 1\":0.22907269,\"document 2\":0.10181008}"));
 		assertTrue(documentService.getMatchingDocuments(searchTerm3).size() == 2);
 	}
 

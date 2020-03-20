@@ -108,7 +108,7 @@ public class DocumentService {
 
 	private double calculateIdf(HashMap<Long, Integer> documentIdAndWordOccurance) {
 		List<Document> savedDocuments = documentRepository.findAll();
-		double idf = Math.log((double) savedDocuments.size() / documentIdAndWordOccurance.size());
+		double idf = Math.log((double) savedDocuments.size() / documentIdAndWordOccurance.size()+1);
 		return idf;
 	}
 
