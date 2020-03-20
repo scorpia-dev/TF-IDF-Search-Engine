@@ -52,7 +52,7 @@ Return the newly saved documents -
 ```
 GET - http://localhost:8080/documents/{word}
 ```
-ie
+i.e.
 ```
  http://localhost:8080/documents/brown
 ```
