@@ -1,6 +1,7 @@
 package searchEngine;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -88,7 +89,7 @@ public class DocumentControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$[0].text").value("The brown fox jumped over the brown dog"))
 				.andReturn();
 
-		assertTrue(documentrepository.findAll().size() == 1);
+		assertEquals(1, documentrepository.findAll().size());
 	}
 
 	@Transactional
@@ -125,7 +126,7 @@ public class DocumentControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$[2].text").value("The Red Fox bit the lazy dog!"))
 				.andReturn();
 
-		assertTrue(documentrepository.findAll().size() == 3);
+		assertEquals(3, documentrepository.findAll().size());
 	}
 
 	@Transactional
@@ -139,19 +140,19 @@ public class DocumentControllerTest {
 		mvc.perform(get("/documents/{word}", searchTerm1).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andDo(print())
 			.andExpect(content().string("{\"document 3\":0.09902103,\"document 1\":0.0866434,\"document 2\":0.07701635}"));
-		assertTrue(documentService.getMatchingDocuments(searchTerm1).size() == 3);
+		assertEquals(3, documentService.getMatchingDocuments(searchTerm1).size());
 
 		String searchTerm2 = "fox";
 		mvc.perform(get("/documents/{word}", searchTerm2).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andDo(print())
 				.andExpect(content().string("{\"document 3\":0.13089868,\"document 1\":0.114536345}"));
-		assertTrue(documentService.getMatchingDocuments(searchTerm2).size() == 2);
+		assertEquals(2, documentService.getMatchingDocuments(searchTerm2).size());
 
 		String searchTerm3 = "brown";
 		mvc.perform(get("/documents/{word}", searchTerm3).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andDo(print())
 				.andExpect(content().string("{\"document 1\":0.22907269,\"document 2\":0.10181008}"));
-		assertTrue(documentService.getMatchingDocuments(searchTerm3).size() == 2);
+		assertEquals(2, documentService.getMatchingDocuments(searchTerm3).size());
 	}
 
 	@Transactional
@@ -167,6 +168,6 @@ public class DocumentControllerTest {
 				.andExpect(status().isInternalServerError()).andDo(print()).andExpect(content().string(containsString(
 						"not valid due to validation error: No document contains the word: " + searchTerm)));
 
-		assertTrue(documentrepository.findAll().size() == 3);
+		assertEquals(3, documentrepository.findAll().size());
 	}
 }
