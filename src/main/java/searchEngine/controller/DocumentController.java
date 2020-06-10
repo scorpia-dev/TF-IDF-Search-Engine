@@ -1,12 +1,9 @@
 package searchEngine.controller;
 
-import java.util.HashMap;
 import java.util.List;
-
-import javax.validation.Valid;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +27,7 @@ public class DocumentController {
 	}
 
 	@GetMapping("/{word}")
-	public HashMap<String, Float> getMatchingDocuments(@PathVariable String word) {
+	public Map<String, Float> getMatchingDocuments(@PathVariable String word) {
 		return documentService.getMatchingDocuments(word);
 	}
 
