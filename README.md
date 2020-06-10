@@ -52,15 +52,15 @@ Return the newly saved documents -
 ```
 GET - http://localhost:8080/documents/{word}
 ```
-ie
+i.e.
 ```
  http://localhost:8080/documents/brown
 ```
 Returns - documents that include the word 'brown' along with the documents TF-IDF, sorted in order of TF-IDF.
 ```
 {
-    "document 1": 0.101366274,
-    "document 2": 0.04505168
+    "document 1": 0.22907269,
+    "document 2": 0.10181008
 }
 ```
 
