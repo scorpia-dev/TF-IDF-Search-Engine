@@ -1,18 +1,16 @@
 package searchEngine.service;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import searchEngine.model.Document;
 import searchEngine.model.InvertedIndex;
 import searchEngine.repositories.DocumentRepository;
 import searchEngine.repositories.InvertedIndexRepository;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentService {
@@ -24,7 +22,6 @@ public class DocumentService {
 	InvertedIndexRepository invertedIndexRepository;
 
 	public List<Document> createDocument(List<Document> documents) {
-
 
 		List<Document> savedDocuments = documentRepository.saveAll(documents);
 
@@ -63,7 +60,6 @@ public class DocumentService {
 				() -> new EntityNotFoundException("No document contains the word: " + word));
 
 		double idf = calculateIdf(invertedIndex.getDocumentIdAndWordOccurance());
-
 
 		HashMap<Long, Integer> documentIdAndWordOccurance = invertedIndex.getDocumentIdAndWordOccurance();
 		HashMap<Long, Float> tfidfHashMap = new HashMap<>();
