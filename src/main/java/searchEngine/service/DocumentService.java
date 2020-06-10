@@ -1,15 +1,9 @@
 package searchEngine.service;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -32,103 +26,80 @@ public class DocumentService {
 
 	public List<Document> createDocument(List<Document> documents) {
 
+
 		List<Document> savedDocuments = documentRepository.saveAll(documents);
 
-		for (Document d : savedDocuments) {
-			Long docId = d.getDocumentId();
-
+		savedDocuments.forEach(document -> {
+			Long docId =document.getDocumentId();
 			String[] words = splitDocumentIntoSingleWords(docId);
-			for (String wordInDoc : words) {
-				Optional<InvertedIndex> invertedIndex = invertedIndexRepository.findById(wordInDoc);
+
+			Arrays.stream(words).forEach(word -> {
+				Optional<InvertedIndex> invertedIndex = invertedIndexRepository.findById(word);
+
 				if (invertedIndex.isPresent()) {
 					InvertedIndex invertedIndexUpdate = invertedIndex.get();
 					HashMap<Long, Integer> docIdAndTf = invertedIndexUpdate.getDocumentIdAndWordOccurance();
-
-					if (docIdAndTf.containsKey(docId)) {
-						Integer updatedOccurance = docIdAndTf.get(docId) + 1;
-						docIdAndTf.put(docId, updatedOccurance);
-						invertedIndexUpdate.setDocumentIdAndWordOccurance(docIdAndTf);
-						invertedIndexRepository.save(invertedIndexUpdate);
-					} else {
-						docIdAndTf.put(docId, 1);
-						invertedIndexUpdate.setDocumentIdAndWordOccurance(docIdAndTf);
-						invertedIndexRepository.save(invertedIndexUpdate);
-					}
+					docIdAndTf.computeIfPresent(docId, (key, val) -> val +1);
+					docIdAndTf.putIfAbsent(docId, 1);
+					invertedIndexUpdate.setDocumentIdAndWordOccurance(docIdAndTf);
+					invertedIndexRepository.save(invertedIndexUpdate);
 
 				}
 				else {
-					HashMap<Long, Integer> docIdAndTf = new HashMap<Long, Integer>();
+					HashMap<Long, Integer> docIdAndTf = new HashMap<>();
 					docIdAndTf.put(docId, 1);
-					
-					InvertedIndex newInvertedIndex = new InvertedIndex(wordInDoc);
+					InvertedIndex newInvertedIndex = new InvertedIndex(word);
 					newInvertedIndex.setDocumentIdAndWordOccurance(docIdAndTf);
 					invertedIndexRepository.save(newInvertedIndex);
 				}
-			}
-		}
+			});
+		});
 		return documents;
 	}
 
-	public HashMap<String, Float> getMatchingDocuments(String word) {
+	public Map<String, Float> getMatchingDocuments(String word) {
 
 		InvertedIndex invertedIndex = invertedIndexRepository.findById(word)
 				.orElseThrow(
 				() -> new EntityNotFoundException("No document contains the word: " + word));
-		
+
+		double idf = calculateIdf(invertedIndex.getDocumentIdAndWordOccurance());
+
+
 		HashMap<Long, Integer> documentIdAndWordOccurance = invertedIndex.getDocumentIdAndWordOccurance();
+		HashMap<Long, Float> tfidfHashMap = new HashMap<>();
 
-		double idf = calculateIdf(documentIdAndWordOccurance);
-
-		HashMap<Long, Float> tfidfHashMap = new HashMap<Long, Float>();
-		Set<Long> documentsContainingSearchTerm = documentIdAndWordOccurance.keySet();
-
-		for (Long docId : documentsContainingSearchTerm) {
-			String[] words = splitDocumentIntoSingleWords(docId);
-			int numOfWordsInDoc = words.length;
-			float tfidf = calculateTfidf(documentIdAndWordOccurance, idf, docId, numOfWordsInDoc);
-
+		documentIdAndWordOccurance.keySet().forEach(docId -> {
+					String[] words = splitDocumentIntoSingleWords(docId);
+					int numOfWordsInDoc = words.length;
+					float tfidf = calculateTfidf(documentIdAndWordOccurance, idf, docId, numOfWordsInDoc);
 			tfidfHashMap.put(docId, tfidf);
-		}
-		HashMap<String, Float> tfidfSortedHashMap = sortResultsByTfidf(tfidfHashMap);
-		
-		return tfidfSortedHashMap;
+		});
+
+		return sortResultsByTfidf(tfidfHashMap);
 	}
 
-	private float calculateTfidf(HashMap<Long, Integer> documentIdAndWordOccurance, double idf, Long docId,
+	private float calculateTfidf(Map<Long, Integer> documentIdAndWordOccurance, double idf, Long docId,
 			int numOfWordsInDoc) {
 		float tf = calculateTf(documentIdAndWordOccurance, docId, numOfWordsInDoc);
-		float tfidf = (float) idf * tf;
-		return tfidf;
+		return (float) idf * tf;
 	}
 
-	private float calculateTf(HashMap<Long, Integer> documentIdAndWordOccurance, Long docId, int numOfWordsInDoc) {
-		float tf = (float) documentIdAndWordOccurance.get(docId) / numOfWordsInDoc;
-		return tf;
+	private float calculateTf(Map<Long, Integer> documentIdAndWordOccurance, Long docId, int numOfWordsInDoc) {
+		return (float) documentIdAndWordOccurance.get(docId) / numOfWordsInDoc;
 	}
 
 	private double calculateIdf(HashMap<Long, Integer> documentIdAndWordOccurance) {
 		List<Document> savedDocuments = documentRepository.findAll();
-		double idf = Math.log((double) savedDocuments.size() / documentIdAndWordOccurance.size()+1);
-		return idf;
+		return Math.log((double) savedDocuments.size() / documentIdAndWordOccurance.size()+1);
 	}
 
-	public static HashMap<String, Float> sortResultsByTfidf(HashMap<Long, Float> hm) {
-		// Create a list from elements of HashMap
-		List<Map.Entry<Long, Float>> list = new LinkedList<Map.Entry<Long, Float>>(hm.entrySet());
-
-		// Sort the list
-		Collections.sort(list, new Comparator<Map.Entry<Long, Float>>() {
-			public int compare(Map.Entry<Long, Float> o1, Map.Entry<Long, Float> o2) {
-				return (o2.getValue()).compareTo(o1.getValue());
-			}
-		});
-
-		// put data from sorted list to hashmap
-		HashMap<String, Float> temp = new LinkedHashMap<String, Float>();
-		for (Entry<Long, Float> aa : list) {
-			temp.put("document " + aa.getKey(), aa.getValue());
-		}
-		return temp;
+	public static Map<String, Float> sortResultsByTfidf(Map<Long, Float> hm) {
+		return hm.entrySet()
+				.stream()
+				.sorted(Entry.<Long,Float>comparingByValue().reversed())
+				.collect(Collectors.toMap(entry -> "document " +entry.getKey(), Entry::getValue,
+						(oldValue, newValue) -> oldValue, LinkedHashMap::new));
 	}
 
 	private String[] splitDocumentIntoSingleWords(Long docId) {
