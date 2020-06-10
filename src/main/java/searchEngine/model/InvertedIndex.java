@@ -7,9 +7,11 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@NoArgsConstructor
 public class InvertedIndex {
 
 	@Id
@@ -17,9 +19,6 @@ public class InvertedIndex {
 
 	@Lob
 	private HashMap<Long, Integer> documentIdAndWordOccurance;
-
-	public InvertedIndex() {
-	}
 
 	public InvertedIndex(String word) {
 		this.setWord(word);

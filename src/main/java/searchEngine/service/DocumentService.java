@@ -3,7 +3,6 @@ package searchEngine.service;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -104,8 +103,7 @@ public class DocumentService {
 
 	private String[] splitDocumentIntoSingleWords(Long docId) {
 		Document doc = documentRepository.getOne(docId);
-		String docText = doc.getText();
-		String[] words = docText.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
+		String[] words = doc.getText().replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
 		for (int i = 0; i < words.length; i++) {
 			words[i] = words[i].replaceAll("[^\\w]", "");
 		}
