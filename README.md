@@ -70,7 +70,7 @@ Returns - documents that include the word 'brown' along with the documents TF-ID
 ## Spec
 * Accepts JSON
 * Response in JSON
-* JDK8 or higher
+* JDK14 or higher
 * Build with Maven
 * Data storage: (in memory) database
 * Lombok has been used to reduce boilerplate code
