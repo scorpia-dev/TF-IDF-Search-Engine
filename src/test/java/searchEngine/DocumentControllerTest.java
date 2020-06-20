@@ -154,6 +154,7 @@ public class DocumentControllerTest {
 	public void listMatchingDocumentsNegativeTest() throws Exception {
 		setUpMultiDocuments();
 
+
 		documentService.createDocument(documents);
 
 		String searchTerm = "hello";

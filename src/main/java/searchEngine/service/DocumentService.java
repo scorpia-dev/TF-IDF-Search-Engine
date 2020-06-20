@@ -13,10 +13,13 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 @Service
-public class DocumentService {
+public class DocumentService  {
 
 	@Autowired
 	DocumentRepository documentRepository;
+
+	@Autowired
+	CalculatorService calculatorService;
 
 	@Autowired
 	InvertedIndexRepository invertedIndexRepository;
@@ -59,7 +62,7 @@ public class DocumentService {
 				.orElseThrow(
 				() -> new EntityNotFoundException("No document contains the word: " + word));
 
-		double idf = calculateIdf(invertedIndex.getDocumentIdAndWordOccurance());
+		double idf = calculatorService.calculateIdf(invertedIndex.getDocumentIdAndWordOccurance());
 
 		HashMap<Long, Integer> documentIdAndWordOccurance = invertedIndex.getDocumentIdAndWordOccurance();
 		HashMap<Long, Float> tfidfHashMap = new HashMap<>();
@@ -67,27 +70,13 @@ public class DocumentService {
 		documentIdAndWordOccurance.keySet().forEach(docId -> {
 					String[] words = splitDocumentIntoSingleWords(docId);
 					int numOfWordsInDoc = words.length;
-					float tfidf = calculateTfidf(documentIdAndWordOccurance, idf, docId, numOfWordsInDoc);
+					float tfidf = calculatorService.calculateTfidf(documentIdAndWordOccurance, idf, docId, numOfWordsInDoc);
 			tfidfHashMap.put(docId, tfidf);
 		});
 
 		return sortResultsByTfidf(tfidfHashMap);
 	}
 
-	private float calculateTfidf(Map<Long, Integer> documentIdAndWordOccurance, double idf, Long docId,
-			int numOfWordsInDoc) {
-		float tf = calculateTf(documentIdAndWordOccurance, docId, numOfWordsInDoc);
-		return (float) idf * tf;
-	}
-
-	private float calculateTf(Map<Long, Integer> documentIdAndWordOccurance, Long docId, int numOfWordsInDoc) {
-		return (float) documentIdAndWordOccurance.get(docId) / numOfWordsInDoc;
-	}
-
-	private double calculateIdf(HashMap<Long, Integer> documentIdAndWordOccurance) {
-		List<Document> savedDocuments = documentRepository.findAll();
-		return Math.log((double) savedDocuments.size() / documentIdAndWordOccurance.size()+1);
-	}
 
 	public static Map<String, Float> sortResultsByTfidf(Map<Long, Float> hm) {
 		return hm.entrySet()
