@@ -2,7 +2,7 @@
 
 
 ## About App
-This is a  TF-IDF document Search Engine in Java 8, built as a RESTful Web Service with Spring Boot/Hibernate H2 in memory database.
+This is a  TF-IDF document Search Engine in Java 14, built as a RESTful Web Service with Spring Boot/Hibernate H2 in memory database.
 
 The search engine is implemented as an inverted index (http://en.wikipedia.org/wiki/Inverted_index) that runs in memory, and returns a result list that is sorted by TF-IDF (http://en.wikipedia.org/wiki/Tf*idf).
 
