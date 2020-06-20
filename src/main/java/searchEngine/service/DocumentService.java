@@ -65,13 +65,13 @@ public class DocumentService  {
 		double idf = calculatorService.calculateIdf(invertedIndex.getDocumentIdAndWordOccurance());
 
 		HashMap<Long, Integer> documentIdAndWordOccurance = invertedIndex.getDocumentIdAndWordOccurance();
-		HashMap<Long, Float> tfidfHashMap = new HashMap<>();
 
+		HashMap<Long, Float> tfidfHashMap = new HashMap<>();
 		documentIdAndWordOccurance.keySet().forEach(docId -> {
 					String[] words = splitDocumentIntoSingleWords(docId);
 					int numOfWordsInDoc = words.length;
 					float tfidf = calculatorService.calculateTfidf(documentIdAndWordOccurance, idf, docId, numOfWordsInDoc);
-			tfidfHashMap.put(docId, tfidf);
+			 tfidfHashMap.put(docId, tfidf);
 		});
 
 		return sortResultsByTfidf(tfidfHashMap);
